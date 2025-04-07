@@ -1,5 +1,5 @@
 # We need 3.12 or later, so that we can set policy CMP0074; see below.
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.10)
 
 set(PCAPPP_VERSION "24.09+")
 
@@ -9,11 +9,7 @@ if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
   set(PCAPPP_MAIN_PROJECT ON)
 endif()
 
-project(
-  PcapPlusPlus
-  DESCRIPTION "PcapPlusPlus is a multiplatform C++ library for capturing, parsing and crafting of network packets."
-  LANGUAGES CXX
-  HOMEPAGE_URL "https://pcapplusplus.github.io/")
+project(PcapPlusPlus CXX)
 
 # Include our custom CMake modules
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/")
@@ -218,8 +214,10 @@ if(Git_FOUND)
     OUTPUT_VARIABLE PCAPPP_GIT_BRANCH)
   string(STRIP "${PCAPPP_GIT_BRANCH}" PCAPPP_GIT_BRANCH)
   message(STATUS "Building from commit:${PCAPPP_GIT_COMMIT} on branch:${PCAPPP_GIT_BRANCH}")
-  add_compile_definitions(GIT_COMMIT="${PCAPPP_GIT_COMMIT}")
-  add_compile_definitions(GIT_BRANCH="${PCAPPP_GIT_BRANCH}")
+  # Use add_definitions instead of add_compile_definitions
+  # -D is required since add_definitions works with raw flags:
+  add_definitions("-DGIT_COMMIT=\"${PCAPPP_GIT_COMMIT}\"")
+  add_definitions("-DGIT_BRANCH=\"${PCAPPP_GIT_BRANCH}\"")
 endif()
 
 if(PCAPPP_USE_PF_RING)

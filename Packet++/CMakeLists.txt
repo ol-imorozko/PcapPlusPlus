@@ -1,6 +1,8 @@
+cmake_minimum_required(VERSION 3.10)
+
 add_library(
   Packet++
-  $<TARGET_OBJECTS:hash-library>
+  $<TARGET_OBJECTS:hash-library-obj>
   src/ArpLayer.cpp
   src/Asn1Codec.cpp
   src/BgpLayer.cpp
@@ -143,11 +145,11 @@ set_property(TARGET Packet++ PROPERTY PUBLIC_HEADER ${public_headers})
 target_include_directories(
   Packet++
   PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/header> $<INSTALL_INTERFACE:include/pcapplusplus>
-  # Don't link with hash-library nor EndianPortable as they won't be exported
-  PRIVATE $<TARGET_PROPERTY:hash-library,INCLUDE_DIRECTORIES>
+  # Use the includes from `hash-library-obj` and `EndianPortable`
+  PRIVATE $<TARGET_PROPERTY:hash-library-obj,INCLUDE_DIRECTORIES>
   PRIVATE $<TARGET_PROPERTY:EndianPortable,INTERFACE_INCLUDE_DIRECTORIES>)
 
-target_link_libraries(Packet++ PUBLIC Common++)
+target_link_libraries(Packet++ PUBLIC Common++ EndianPortable)
 
 if(PCAPPP_INSTALL)
   install(
